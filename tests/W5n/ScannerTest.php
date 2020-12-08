@@ -17,8 +17,44 @@ class ScannerTest extends FrameworkTestCase
         $this->assertEquals('a', $scanner->consume());
         $this->assertEquals('r', $scanner->consume());
 
+        $this->expectException(ScannerException::class);
         $this->assertNull($scanner->consume());
-        $this->assertNull($scanner->consume());
+    }
+
+    public function testConsumeAny()
+    {
+        $scanner = $this->createScanner('consumes');
+
+        $scanner->consumeAny('foobar', 'con');
+        $this->assertTrue($scanner->matches('sumes'));
+    }
+
+    public function testConsumeAnyShouldThrow()
+    {
+        $scanner = $this->createScanner('consumes');
+
+        $this->expectException(ScannerException::class);
+        $scanner->consumeAny('foo', 'bar');
+    }
+
+
+    public function testClearSavedPositions()
+    {
+        $scanner = $this->createScanner('consumes');
+        $scanner->savePosition();
+        $scanner->clearSavedPositions();
+
+        $this->expectException(ScannerException::class);
+
+        $scanner->popSavedPosition();
+    }
+
+    public function testEmptySavedPositionShouldThrowWhenPop()
+    {
+        $scanner = $this->createScanner('consumes');
+        $this->expectException(ScannerException::class);
+
+        $scanner->popSavedPosition();
     }
 
     public function testConsumed()
@@ -74,6 +110,14 @@ class ScannerTest extends FrameworkTestCase
         $this->assertFalse($scanner->matches('foo'));
     }
 
+    public function testMatchesAny()
+    {
+        $scanner = $this->createScanner('matches');
+
+        $this->assertTrue($scanner->matchesAny('other', 'matches'));
+        $this->assertFalse($scanner->matchesAny('one', 'another'));
+    }
+
     public function testConsumeWhitespaces()
     {
         //5 spaces
@@ -91,6 +135,7 @@ class ScannerTest extends FrameworkTestCase
             '123456',
             $scanner->consumeWhile('#[0-9]#')
         );
+        $this->assertNull($scanner->consumeWhile('#[0-9]#'));
 
         $this->assertEquals(
             'while',
@@ -106,6 +151,8 @@ class ScannerTest extends FrameworkTestCase
             '123456',
             $scanner->consumeUnless('#[a-z]#')
         );
+
+        $this->assertNull($scanner->consumeUnless('#[a-z]#'));
 
         $this->assertEquals(
             'while',
@@ -134,6 +181,17 @@ class ScannerTest extends FrameworkTestCase
         $this->assertEquals('01234', $result);
     }
 
+    public function testConsumeWhileCallbackShouldReturnNullWhenPredicateFailsOnFirstTry()
+    {
+        $scanner = $this->createScanner('0123456789');
+
+        $scanner->consumeWhileCallback(function ($char) {
+            return intval($char) < -1;
+        });
+
+        $this->assertNull(null);
+    }
+
     public function testConsumeUnlessCallback()
     {
         $scanner = $this->createScanner('0123456789');
@@ -145,11 +203,34 @@ class ScannerTest extends FrameworkTestCase
         $this->assertEquals('01234', $result);
     }
 
+    public function testConsumeUnlessCallbackShouldReturnNullWhenPredicateFailsOnFirstTry()
+    {
+        $scanner = $this->createScanner('0123456789');
+
+        $scanner->consumeUnlessCallback(function ($char) {
+            return intval($char) == 0;
+        });
+
+        $this->assertNull(null);
+    }
+
+
     public function testGetLastPosition()
     {
         $scanner = $this->createScanner('0123456789');
 
         $this->assertEquals(10, $scanner->getLastPosition());
+    }
+
+    public function testSaveAndLoad()
+    {
+        $scanner = $this->createScanner('0123456789');
+        $scanner->savePosition();
+        $scanner->consume('0123456');
+
+        $this->assertTrue($scanner->matches('78'));
+        $scanner->loadPosition();
+        $this->assertTrue($scanner->matches('0123456'));
     }
 
 
