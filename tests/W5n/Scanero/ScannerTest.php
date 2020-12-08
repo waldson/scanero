@@ -1,9 +1,10 @@
 <?php
-namespace Tests\W5n;
+
+namespace Tests\W5n\Scanero;
 
 use PHPUnit\Framework\TestCase as FrameworkTestCase;
-use W5n\Scanner;
-use W5n\ScannerException;
+use W5n\Scanero\Scanner;
+use W5n\Scanero\ScannerException;
 
 class ScannerTest extends FrameworkTestCase
 {

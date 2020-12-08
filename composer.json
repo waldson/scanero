@@ -1,6 +1,6 @@
 {
-    "name": "waldson/scanner",
-    "description": "Utility to parse text X scan text X chars at a time.",
+    "name": "w5n/scanero",
+    "description": "Utility class to parse strings one (or more) chars at a time.",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -9,7 +9,9 @@
             "email": "waldsonpatricio@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "7.3"
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
         "symfony/var-dumper": "^5.2",
@@ -18,8 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "W5n\\": "src/",
-            "W5n\\Samples\\": "samples/"
+            "W5n\\Scanero\\": "src/"
         }
     }
 }

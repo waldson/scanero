@@ -1,5 +1,6 @@
 <?php
-namespace W5n;
+
+namespace W5n\Scanero;
 
 class ScannerException extends \Exception
 {

@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace W5n;
+namespace W5n\Scanero;
 
 class Scanner
 {
